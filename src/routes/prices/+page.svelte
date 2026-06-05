@@ -15,40 +15,50 @@
 
 <svelte:head><title>Prices</title></svelte:head>
 
-<main class="mx-auto max-w-4xl p-6">
-	<header class="mb-6 flex items-baseline justify-between">
-		<h1 class="text-2xl font-semibold">Prices</h1>
+<main class="mx-auto max-w-4xl p-6 sm:p-8">
+	<header class="mb-8 flex items-baseline justify-between border-b border-gray-200 pb-4">
+		<div>
+			<h1 class="text-2xl font-semibold tracking-tight text-gray-900">Prices</h1>
+			<p class="mt-1 text-sm text-gray-500">
+				{data.prices.length}
+				{data.prices.length === 1 ? 'property' : 'properties'}
+			</p>
+		</div>
 		<nav class="text-sm">
-			<a class="text-blue-600 hover:underline" href="/orders">Orders →</a>
+			<a class="font-medium text-blue-600 hover:text-blue-700 hover:underline" href="/orders"
+				>Orders →</a
+			>
 		</nav>
 	</header>
 
 	{#if form?.error}
-		<p class="mb-4 rounded bg-red-50 px-3 py-2 text-sm text-red-700">{form.error}</p>
+		<p class="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+			{form.error}
+		</p>
 	{/if}
 
-	<div class="overflow-x-auto rounded border border-gray-200">
+	<div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
 		<table class="w-full border-collapse text-sm">
-			<thead class="bg-gray-50 text-left text-gray-600">
+			<thead class="bg-gray-50 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
 				<tr>
-					<th class="px-3 py-2 font-medium">Prop ID</th>
-					<th class="px-3 py-2 font-medium">Default</th>
-					<th class="px-3 py-2 font-medium">Price</th>
-					<th class="px-3 py-2 font-medium">Updated</th>
-					<th class="px-3 py-2"></th>
+					<th class="px-4 py-3">Prop ID</th>
+					<th class="px-4 py-3">Default</th>
+					<th class="px-4 py-3">Price</th>
+					<th class="px-4 py-3">Updated</th>
+					<th class="px-4 py-3"></th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody class="divide-y divide-gray-100">
 				{#each data.prices as row (row.kmPropId)}
 					{@const justSaved = form?.saved === row.kmPropId}
-					<tr class="border-t border-gray-100 hover:bg-gray-50">
-						<td class="px-3 py-2 font-mono text-xs">{row.kmPropId}</td>
-						<td class="px-3 py-2 text-gray-400">{row.defaultValue}</td>
-						<td colspan="3" class="px-3 py-1">
+					<tr class="transition-colors odd:bg-white even:bg-gray-50/40 hover:bg-blue-50/40">
+						<td class="px-4 py-3 font-mono text-xs text-gray-600">{row.kmPropId}</td>
+						<td class="px-4 py-3 text-gray-400">{row.defaultValue}</td>
+						<td colspan="3" class="px-4 py-2">
 							<form
 								method="POST"
 								action="?/save"
-								class="flex items-center gap-2"
+								class="flex items-center gap-3"
 								use:enhance={() => {
 									savingId = row.kmPropId;
 									return async ({ update }) => {
@@ -65,20 +75,21 @@
 									min="0"
 									value={row.override ?? row.effective}
 									placeholder={String(row.defaultValue)}
-									class="w-32 rounded border border-gray-300 px-2 py-1 text-right
+									class="w-32 rounded-md border border-gray-300 px-2 py-1.5 text-right shadow-sm
+										focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none
 										{row.override !== null ? 'bg-white' : 'bg-gray-50 text-gray-500'}"
 								/>
 								<span class="w-44 text-xs text-gray-400">{fmtDate(row.updatedAt)}</span>
 								<button
 									type="submit"
 									disabled={savingId === row.kmPropId}
-									class="rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white
-										hover:bg-blue-700 disabled:opacity-50"
+									class="rounded-md bg-blue-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm
+										transition-colors hover:bg-blue-700 disabled:opacity-50"
 								>
 									{savingId === row.kmPropId ? 'Saving…' : 'Save'}
 								</button>
 								{#if justSaved && savingId !== row.kmPropId}
-									<span class="text-xs text-green-600">Saved</span>
+									<span class="text-xs font-medium text-green-600">Saved</span>
 								{/if}
 							</form>
 						</td>
@@ -87,7 +98,7 @@
 			</tbody>
 		</table>
 	</div>
-	<p class="mt-3 text-xs text-gray-500">
+	<p class="mt-4 text-xs leading-relaxed text-gray-500">
 		Greyed values use the furniture-designer default. Saving stores an override in the database.
 		Clear the field and save to revert to the default.
 	</p>
