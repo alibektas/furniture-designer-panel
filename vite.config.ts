@@ -4,6 +4,9 @@ import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
+	// Single shared .env at the repo root (next to docker-compose.yaml), so the
+	// panel, the designer app, and the compose stack all read the same file.
+	envDir: '..',
 	plugins: [tailwindcss(), sveltekit()],
 	test: {
 		expect: { requireAssertions: true },
