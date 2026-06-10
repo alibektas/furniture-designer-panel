@@ -12,6 +12,10 @@ const config = {
 		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 		adapter: adapter(),
 
+		// Single shared .env at the repo root (next to docker-compose.yaml), so
+		// the panel, the designer app, and the compose stack all read one file.
+		env: { dir: '..' },
+
 		alias: {
 			// Shared, read-only imports from the sibling furniture-designer app.
 			// We import its serializer, export types, Model and prop registry —
