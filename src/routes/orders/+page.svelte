@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -21,9 +22,13 @@
 				</p>
 			{/if}
 		</div>
-		<nav class="text-sm">
-			<a class="font-medium text-blue-600 hover:text-blue-700 hover:underline" href="/prices"
-				>Prices →</a
+		<nav class="flex items-center gap-4 text-sm">
+			<a class="font-medium text-gray-500 hover:text-gray-700 hover:underline" href={resolve('/')}
+				>Home</a
+			>
+			<a
+				class="font-medium text-blue-600 hover:text-blue-700 hover:underline"
+				href={resolve('/prices')}>Prices →</a
 			>
 		</nav>
 	</header>
