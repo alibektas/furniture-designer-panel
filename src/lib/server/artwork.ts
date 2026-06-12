@@ -132,6 +132,47 @@ export async function createArtwork(input: CreateArtworkInput): Promise<ArtworkV
 	}
 }
 
+export interface ArtworkPriceRow {
+	id: string;
+	uniqueId: string;
+	name: string;
+	widthCm: number;
+	heightCm: number;
+	side: string;
+	price: number;
+	updatedAt: Date;
+}
+
+/**
+ * List artworks as price rows for the props/Prices admin. Ordered by unique id
+ * so the editor is stable.
+ */
+export async function listArtworkPrices(): Promise<ArtworkPriceRow[]> {
+	return db
+		.select({
+			id: artwork.id,
+			uniqueId: artwork.uniqueId,
+			name: artwork.name,
+			widthCm: artwork.widthCm,
+			heightCm: artwork.heightCm,
+			side: artwork.side,
+			price: artwork.price,
+			updatedAt: artwork.updatedAt
+		})
+		.from(artwork)
+		.orderBy(asc(artwork.uniqueId));
+}
+
+/** Update a single artwork's price. Returns false if the artwork is gone. */
+export async function setArtworkPrice(id: string, value: number): Promise<boolean> {
+	const [row] = await db
+		.update(artwork)
+		.set({ price: value, updatedAt: new Date() })
+		.where(eq(artwork.id, id))
+		.returning({ id: artwork.id });
+	return !!row;
+}
+
 /** Delete an artwork and its stored objects. Returns false if not found. */
 export async function deleteArtwork(id: string): Promise<boolean> {
 	const [row] = await db.delete(artwork).where(eq(artwork.id, id)).returning();
