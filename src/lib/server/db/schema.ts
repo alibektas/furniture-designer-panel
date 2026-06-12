@@ -79,3 +79,28 @@ export const artwork = pgTable(
 
 export type Artwork = typeof artwork.$inferSelect;
 export type NewArtwork = typeof artwork.$inferInsert;
+
+/**
+ * Curated collection of starter models. Owned by the panel: admins paste a
+ * drawing's JSON export here under a company-defined unique id. furniture-designer
+ * reads this table (as a read-only mirror) to show the collection and let
+ * customers clone an item as their point of departure.
+ *
+ * Same shape as `furniture_model` — `data` holds a FurnitureExport — but the
+ * primary key `id` IS the admin-supplied unique code (not a UUID), so the
+ * customer-facing route `/collection/[id]` looks an item up directly by it.
+ * Keep columns in sync with ../furniture-designer/src/lib/server/db/schema.ts.
+ */
+export const collection = pgTable('collection', {
+	/** Admin-supplied unique code; also the customer-facing route id. */
+	id: text('id').primaryKey(),
+	/** JSON-serialized FurnitureExport (the drawing). */
+	data: jsonb('data').notNull(),
+	createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
+	updatedAt: timestamp('updated_at', { mode: 'date' }).notNull().defaultNow(),
+	/** Export format version, taken from the uploaded JSON. */
+	version: text('version').notNull()
+});
+
+export type Collection = typeof collection.$inferSelect;
+export type NewCollection = typeof collection.$inferInsert;

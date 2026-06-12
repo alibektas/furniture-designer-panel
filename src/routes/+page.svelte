@@ -15,5 +15,9 @@
 			<a class="text-blue-600 hover:underline" href="/artwork">Artwork</a>
 			<span class="text-sm text-gray-500">— browse, search, add and delete artwork</span>
 		</li>
+		<li>
+			<a class="text-blue-600 hover:underline" href="/collection">Collection</a>
+			<span class="text-sm text-gray-500">— curated starter models customers can clone</span>
+		</li>
 	</ul>
 </main>

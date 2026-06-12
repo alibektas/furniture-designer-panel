@@ -66,7 +66,7 @@
 							<td class="px-4 py-3 whitespace-nowrap">
 								<a
 									class="text-blue-600 hover:text-blue-700 hover:underline"
-									href="{data.designerUrl}/{order.id}/view"
+									href="{data.designerUrl}/view/{order.id}"
 									target="_blank"
 									rel="noopener noreferrer">Drawing</a
 								>
