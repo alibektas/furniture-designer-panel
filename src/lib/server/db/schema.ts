@@ -30,12 +30,11 @@ export const furnitureModel = pgTable('furniture_model', {
 export type FurnitureModel = typeof furnitureModel.$inferSelect;
 
 /**
- * Admin-managed prices, keyed by KM prop id. Owned by the panel. furniture-designer
- * reads these as overrides, falling back to its hardcoded BASE_PRICES when a key
- * is absent here.
+ * Admin-managed prices, keyed by prop id. Owned by the panel and the single
+ * source of truth for prop prices; furniture-designer reads this table directly.
  */
 export const price = pgTable('price', {
-	kmPropId: text('km_prop_id').primaryKey(),
+	propId: text('prop_id').primaryKey(),
 	value: doublePrecision('value').notNull(),
 	updatedAt: timestamp('updated_at', { mode: 'date' }).notNull().defaultNow()
 });
