@@ -9,11 +9,14 @@ import {
 } from 'drizzle-orm/pg-core';
 
 /**
- * Mirror of furniture-designer's `furniture_model` table. The panel reads this
- * (same postgres DB, admin privileges) to list leads — rows with a non-null
- * email come from the "Interested"/inquiry flow. Keep columns in sync with
- * ../furniture-designer/src/lib/server/db/schema.ts. Do not migrate this table
- * from the panel; furniture-designer owns it.
+ * The `furniture_model` table. Written by furniture-designer (the customer app
+ * inserts a row on each save / "Interested" inquiry); the panel reads it to
+ * list leads — rows with a non-null email come from the inquiry flow.
+ *
+ * The panel is the single owner of ALL migrations for this shared DB, so this
+ * table IS migrated from here. furniture-designer declares a matching schema
+ * for read/write access only (no migrations). Keep columns in sync with
+ * ../furniture-designer/src/lib/server/db/schema.ts.
  */
 export const furnitureModel = pgTable('furniture_model', {
 	id: text('id').primaryKey(),
