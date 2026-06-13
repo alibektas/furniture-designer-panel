@@ -16,6 +16,7 @@
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
+	import { Home } from '@lucide/svelte';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -56,13 +57,14 @@
 		</div>
 		<div class="flex items-center gap-3">
 			<nav class="flex items-center gap-4 text-sm text-muted-foreground">
-				<a
-					class="inline-flex items-center gap-1 hover:text-foreground hover:underline"
-					href={resolve('/')}
-				>
-					<HomeIcon class="size-4" /> Home
-				</a>
-				<a class="hover:text-foreground hover:underline" href={resolve('/artwork')}>Artwork →</a>
+				<nav class="flex items-center gap-4 text-sm">
+					<a
+						class="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground hover:underline"
+						href={resolve('/')}
+					>
+						<Home class="size-4" /> Home
+					</a>
+				</nav>
 			</nav>
 			<Button onclick={() => (addOpen = true)}>
 				<PlusIcon class="size-4" /> Add to collection

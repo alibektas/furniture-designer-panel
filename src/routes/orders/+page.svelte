@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { HomeIcon } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -23,13 +24,12 @@
 			{/if}
 		</div>
 		<nav class="flex items-center gap-4 text-sm">
-			<a class="font-medium text-gray-500 hover:text-gray-700 hover:underline" href={resolve('/')}
-				>Home</a
-			>
 			<a
-				class="font-medium text-blue-600 hover:text-blue-700 hover:underline"
-				href={resolve('/prices')}>Prices →</a
+				class="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground hover:underline"
+				href={resolve('/')}
 			>
+				<HomeIcon class="size-4" /> Home
+			</a>
 		</nav>
 	</header>
 

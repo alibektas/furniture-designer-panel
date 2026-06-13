@@ -23,11 +23,11 @@
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Toaster } from '$lib/components/ui/sonner/index.js';
 	import { toast } from 'svelte-sonner';
-	import HomeIcon from '@lucide/svelte/icons/house';
 	import InfoIcon from '@lucide/svelte/icons/info';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import SearchIcon from '@lucide/svelte/icons/search';
+	import { Home } from '@lucide/svelte';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -114,9 +114,8 @@
 					class="inline-flex items-center gap-1 hover:text-foreground hover:underline"
 					href={resolve('/')}
 				>
-					<HomeIcon class="size-4" /> Home
+					<Home class="size-4" /> Home
 				</a>
-				<a class="hover:text-foreground hover:underline" href={resolve('/prices')}>Prices →</a>
 			</nav>
 			<Button onclick={() => (addOpen = true)}>
 				<PlusIcon class="size-4" /> Add artwork
