@@ -30,7 +30,7 @@ CREATE TABLE "furniture_model" (
 );
 --> statement-breakpoint
 CREATE TABLE "price" (
-	"km_prop_id" text PRIMARY KEY NOT NULL,
+	"prop_id" text PRIMARY KEY NOT NULL,
 	"value" double precision NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );

@@ -1,5 +1,5 @@
 {
-  "id": "8d4e183b-0929-420f-81a7-f421d4bb961f",
+  "id": "6c19743c-45cd-4ed7-9734-c1b9a6f601fe",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -199,8 +199,8 @@
       "name": "price",
       "schema": "",
       "columns": {
-        "km_prop_id": {
-          "name": "km_prop_id",
+        "prop_id": {
+          "name": "prop_id",
           "type": "text",
           "primaryKey": true,
           "notNull": true
