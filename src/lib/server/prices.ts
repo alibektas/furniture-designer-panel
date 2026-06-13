@@ -1,66 +1,41 @@
 /**
  * Price service for the admin panel.
  *
- * Merges the DB-stored overrides (table `price`) on top of the default/fallback
- * values derived from furniture-designer. The panel owns writing overrides; the
- * defaults are display seeds and the safety net.
+ * The `price` table is the single source of truth for prop prices — both the
+ * panel and furniture-designer read it directly. There are no hardcoded
+ * defaults; the table is seeded once (see scripts/seed-prices.ts) and edited
+ * here. A prop without a row simply has no price.
  */
 
 import { db } from './db';
 import { price } from './db/schema';
-import { eq } from 'drizzle-orm';
-import { DEFAULT_PRICES } from './default-prices';
-import type { AllKMPropIds } from '$fd/server/km_prop';
+import { asc } from 'drizzle-orm';
 
 export interface PriceRow {
-	kmPropId: AllKMPropIds;
-	/** Default/fallback value from furniture-designer. */
-	defaultValue: number;
-	/** Admin override stored in the DB, or null when none is set. */
-	override: number | null;
-	/** Effective value: override when set, otherwise default. */
-	effective: number;
-	updatedAt: Date | null;
+	propId: string;
+	value: number;
+	updatedAt: Date;
 }
 
 /**
- * List every known prop id with its default, its DB override (if any), and the
- * effective price. Ordering follows the default-prices declaration order so the
- * editor is stable and grouped the way furniture-designer lists them.
+ * List every priced prop, ordered by id for a stable editor.
  */
 export async function listPrices(): Promise<PriceRow[]> {
-	const overrides = await db.select().from(price);
-	const overrideMap = new Map(overrides.map((o) => [o.kmPropId, o]));
-
-	return (Object.entries(DEFAULT_PRICES) as [AllKMPropIds, number][]).map(
-		([kmPropId, defaultValue]) => {
-			const o = overrideMap.get(kmPropId);
-			const override = o ? o.value : null;
-			return {
-				kmPropId,
-				defaultValue,
-				override,
-				effective: override ?? defaultValue,
-				updatedAt: o ? o.updatedAt : null
-			};
-		}
-	);
+	return db
+		.select({ propId: price.propId, value: price.value, updatedAt: price.updatedAt })
+		.from(price)
+		.orderBy(asc(price.propId));
 }
 
 /**
- * Upsert a single override. Passing null clears the override (reverts to default).
+ * Upsert a single prop price.
  */
-export async function setPrice(kmPropId: string, value: number | null): Promise<void> {
-	if (value === null) {
-		await db.delete(price).where(eq(price.kmPropId, kmPropId));
-		return;
-	}
-
+export async function setPrice(propId: string, value: number): Promise<void> {
 	await db
 		.insert(price)
-		.values({ kmPropId, value, updatedAt: new Date() })
+		.values({ propId, value, updatedAt: new Date() })
 		.onConflictDoUpdate({
-			target: price.kmPropId,
+			target: price.propId,
 			set: { value, updatedAt: new Date() }
 		});
 }
