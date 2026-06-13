@@ -17,6 +17,22 @@
 	// Track which row is currently saving, keyed by prop id / artwork id.
 	let savingId = $state<string | null>(null);
 
+	// Free-text filter applied to both tables.
+	let query = $state('');
+	const q = $derived(query.trim().toLowerCase());
+
+	const filteredPrices = $derived(
+		q ? data.prices.filter((row) => row.propId.toLowerCase().includes(q)) : data.prices
+	);
+	const filteredArtwork = $derived(
+		q
+			? data.artworkPrices.filter(
+					(art) =>
+						art.name.toLowerCase().includes(q) || art.uniqueId.toLowerCase().includes(q)
+				)
+			: data.artworkPrices
+	);
+
 	function fmtDate(d: Date | null): string {
 		if (!d) return '—';
 		return new Date(d).toLocaleString('de-DE');
@@ -40,9 +56,17 @@
 			>
 				<HomeIcon class="size-4" /> Home
 			</a>
-			<a class="font-medium text-primary hover:underline" href={resolve('/artwork')}>Artwork →</a>
 		</nav>
 	</header>
+
+	<div class="mb-6">
+		<Input
+			type="search"
+			placeholder="Search by prop ID or artwork name…"
+			bind:value={query}
+			class="max-w-sm"
+		/>
+	</div>
 
 	{#if form?.error}
 		<p
@@ -57,8 +81,7 @@
 		<Card.Header>
 			<Card.Title>Prop prices</Card.Title>
 			<Card.Description>
-				Greyed values use the furniture-designer default. Saving stores an override; clear the field
-				and save to revert.
+				The price list read by furniture-designer. Edit a value and save to update it.
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
@@ -67,27 +90,25 @@
 					<Table.Header>
 						<Table.Row>
 							<Table.Head>Prop ID</Table.Head>
-							<Table.Head>Default</Table.Head>
 							<Table.Head>Price</Table.Head>
 							<Table.Head>Updated</Table.Head>
 							<Table.Head></Table.Head>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{#each data.prices as row (row.kmPropId)}
-							{@const justSaved = form?.saved === row.kmPropId}
+						{#each filteredPrices as row (row.propId)}
+							{@const justSaved = form?.saved === row.propId}
 							<Table.Row>
 								<Table.Cell class="font-mono text-xs text-muted-foreground">
-									{row.kmPropId}
+									{row.propId}
 								</Table.Cell>
-								<Table.Cell class="text-muted-foreground">{row.defaultValue}</Table.Cell>
 								<Table.Cell colspan={3} class="py-2">
 									<form
 										method="POST"
 										action="?/save"
 										class="flex items-center gap-3"
 										use:enhance={() => {
-											savingId = row.kmPropId;
+											savingId = row.propId;
 											return async ({ result, update }) => {
 												await update({ reset: false });
 												savingId = null;
@@ -95,26 +116,29 @@
 											};
 										}}
 									>
-										<input type="hidden" name="kmPropId" value={row.kmPropId} />
+										<input type="hidden" name="propId" value={row.propId} />
 										<Input
 											name="value"
 											type="number"
 											step="any"
 											min="0"
-											value={row.override ?? row.effective}
-											placeholder={String(row.defaultValue)}
-											class="w-32 text-right {row.override !== null
-												? ''
-												: 'bg-muted text-muted-foreground'}"
+											value={row.value}
+											class="w-32 text-right"
 										/>
 										<span class="w-44 text-xs text-muted-foreground">{fmtDate(row.updatedAt)}</span>
-										<Button type="submit" size="sm" disabled={savingId === row.kmPropId}>
-											{savingId === row.kmPropId ? 'Saving…' : 'Save'}
+										<Button type="submit" size="sm" disabled={savingId === row.propId}>
+											{savingId === row.propId ? 'Saving…' : 'Save'}
 										</Button>
-										{#if justSaved && savingId !== row.kmPropId}
+										{#if justSaved && savingId !== row.propId}
 											<span class="text-xs font-medium text-green-600">Saved</span>
 										{/if}
 									</form>
+								</Table.Cell>
+							</Table.Row>
+						{:else}
+							<Table.Row>
+								<Table.Cell colspan={4} class="py-6 text-center text-sm text-muted-foreground">
+									No props match “{query}”.
 								</Table.Cell>
 							</Table.Row>
 						{/each}
@@ -152,7 +176,7 @@
 							</Table.Row>
 						</Table.Header>
 						<Table.Body>
-							{#each data.artworkPrices as art (art.id)}
+							{#each filteredArtwork as art (art.id)}
 								{@const justSaved = form?.savedArtwork === art.id}
 								<Table.Row>
 									<Table.Cell>

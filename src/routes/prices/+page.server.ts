@@ -11,26 +11,20 @@ export const load: PageServerLoad = async () => {
 export const actions: Actions = {
 	save: async ({ request }) => {
 		const form = await request.formData();
-		const kmPropId = form.get('kmPropId');
+		const propId = form.get('propId');
 		const raw = form.get('value');
 
-		if (typeof kmPropId !== 'string' || !kmPropId) {
+		if (typeof propId !== 'string' || !propId) {
 			return fail(400, { error: 'Missing prop id' });
 		}
 
-		// Empty value clears the override (reverts to the default).
-		if (raw === null || raw === '') {
-			await setPrice(kmPropId, null);
-			return { saved: kmPropId, cleared: true };
-		}
-
 		const value = Number(raw);
-		if (!Number.isFinite(value) || value < 0) {
-			return fail(400, { error: 'Price must be a non-negative number', kmPropId });
+		if (raw === null || raw === '' || !Number.isFinite(value) || value < 0) {
+			return fail(400, { error: 'Price must be a non-negative number', propId });
 		}
 
-		await setPrice(kmPropId, value);
-		return { saved: kmPropId };
+		await setPrice(propId, value);
+		return { saved: propId };
 	},
 
 	saveArtwork: async ({ request }) => {
