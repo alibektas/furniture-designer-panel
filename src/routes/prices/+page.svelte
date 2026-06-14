@@ -27,8 +27,7 @@
 	const filteredArtwork = $derived(
 		q
 			? data.artworkPrices.filter(
-					(art) =>
-						art.name.toLowerCase().includes(q) || art.uniqueId.toLowerCase().includes(q)
+					(art) => art.name.toLowerCase().includes(q) || art.uniqueId.toLowerCase().includes(q)
 				)
 			: data.artworkPrices
 	);

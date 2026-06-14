@@ -96,7 +96,9 @@
 						<Table.Row>
 							<Table.Cell class="font-mono text-sm">{item.id}</Table.Cell>
 							<Table.Cell class="text-sm text-muted-foreground">{item.version}</Table.Cell>
-							<Table.Cell class="text-sm text-muted-foreground">{fmtDate(item.createdAt)}</Table.Cell>
+							<Table.Cell class="text-sm text-muted-foreground"
+								>{fmtDate(item.createdAt)}</Table.Cell
+							>
 							<Table.Cell class="text-right">
 								<a
 									href={viewUrl(item.id)}
@@ -126,7 +128,8 @@
 										class="size-8"
 										title="Delete collection item"
 										onclick={(e: MouseEvent) => {
-											if (!confirm(`Delete "${item.id}"? This cannot be undone.`)) e.preventDefault();
+											if (!confirm(`Delete "${item.id}"? This cannot be undone.`))
+												e.preventDefault();
 										}}
 									>
 										<TrashIcon class="size-4" />

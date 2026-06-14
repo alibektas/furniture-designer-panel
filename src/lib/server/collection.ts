@@ -128,6 +128,9 @@ export async function createCollection(input: CreateCollectionInput): Promise<Co
 
 /** Delete a collection item. Returns false if not found. */
 export async function deleteCollection(id: string): Promise<boolean> {
-	const [row] = await db.delete(collection).where(eq(collection.id, id)).returning({ id: collection.id });
+	const [row] = await db
+		.delete(collection)
+		.where(eq(collection.id, id))
+		.returning({ id: collection.id });
 	return !!row;
 }

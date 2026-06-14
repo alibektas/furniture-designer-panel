@@ -9,7 +9,8 @@
 		</li>
 		<li>
 			<a class="text-blue-600 hover:underline" href="/orders">Orders</a>
-			<span class="text-sm text-gray-500">— customers who left their email, with their drawing</span>
+			<span class="text-sm text-gray-500">— customers who left their email, with their drawing</span
+			>
 		</li>
 		<li>
 			<a class="text-blue-600 hover:underline" href="/artwork">Artwork</a>
