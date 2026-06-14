@@ -19,7 +19,8 @@
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
-		"db:seed": "bun run scripts/seed-prices.ts"
+		"db:seed": "bun run scripts/seed-prices.ts",
+		"db:seed:admin": "bun run scripts/seed-admin.ts"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
@@ -57,6 +58,7 @@
 	},
 	"dependencies": {
 		"@lucide/svelte": "^1.17.0",
+		"better-auth": "^1.6.18",
 		"bits-ui": "^2.18.1",
 		"clsx": "^2.1.1",
 		"minio": "^8.0.7",

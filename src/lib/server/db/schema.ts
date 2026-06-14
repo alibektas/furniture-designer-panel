@@ -5,7 +5,9 @@ import {
 	jsonb,
 	doublePrecision,
 	integer,
-	uniqueIndex
+	boolean,
+	uniqueIndex,
+	index
 } from 'drizzle-orm/pg-core';
 
 /**
@@ -106,3 +108,92 @@ export const collection = pgTable('collection', {
 
 export type Collection = typeof collection.$inferSelect;
 export type NewCollection = typeof collection.$inferInsert;
+
+/* -------------------------------------------------------------------------- */
+/* Better Auth                                                                 */
+/*                                                                             */
+/* Tables for the admin login (username + password). Managed by Better Auth   */
+/* via the Drizzle adapter; columns mirror its core + username-plugin schema.  */
+/* Generated with `bunx @better-auth/cli generate` — keep in sync if the auth  */
+/* config (src/lib/server/auth.ts) gains plugins. Admins are seeded by         */
+/* scripts/seed-admin.ts; there is no public sign-up.                          */
+/* -------------------------------------------------------------------------- */
+
+export const user = pgTable('user', {
+	id: text('id').primaryKey(),
+	name: text('name').notNull(),
+	email: text('email').notNull().unique(),
+	emailVerified: boolean('email_verified').default(false).notNull(),
+	image: text('image'),
+	createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+	updatedAt: timestamp('updated_at', { mode: 'date' })
+		.defaultNow()
+		.$onUpdate(() => new Date())
+		.notNull(),
+	/** Normalized (lowercased) login name. */
+	username: text('username').unique(),
+	/** Original-cased username for display. */
+	displayUsername: text('display_username')
+});
+
+export const session = pgTable(
+	'session',
+	{
+		id: text('id').primaryKey(),
+		expiresAt: timestamp('expires_at', { mode: 'date' }).notNull(),
+		token: text('token').notNull().unique(),
+		createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+		updatedAt: timestamp('updated_at', { mode: 'date' })
+			.$onUpdate(() => new Date())
+			.notNull(),
+		ipAddress: text('ip_address'),
+		userAgent: text('user_agent'),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' })
+	},
+	(t) => [index('session_user_id_idx').on(t.userId)]
+);
+
+export const account = pgTable(
+	'account',
+	{
+		id: text('id').primaryKey(),
+		accountId: text('account_id').notNull(),
+		providerId: text('provider_id').notNull(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		accessToken: text('access_token'),
+		refreshToken: text('refresh_token'),
+		idToken: text('id_token'),
+		accessTokenExpiresAt: timestamp('access_token_expires_at', { mode: 'date' }),
+		refreshTokenExpiresAt: timestamp('refresh_token_expires_at', { mode: 'date' }),
+		scope: text('scope'),
+		/** Hashed password for username/email login. */
+		password: text('password'),
+		createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+		updatedAt: timestamp('updated_at', { mode: 'date' })
+			.$onUpdate(() => new Date())
+			.notNull()
+	},
+	(t) => [index('account_user_id_idx').on(t.userId)]
+);
+
+export const verification = pgTable(
+	'verification',
+	{
+		id: text('id').primaryKey(),
+		identifier: text('identifier').notNull(),
+		value: text('value').notNull(),
+		expiresAt: timestamp('expires_at', { mode: 'date' }).notNull(),
+		createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+		updatedAt: timestamp('updated_at', { mode: 'date' })
+			.defaultNow()
+			.$onUpdate(() => new Date())
+			.notNull()
+	},
+	(t) => [index('verification_identifier_idx').on(t.identifier)]
+);
+
+export type User = typeof user.$inferSelect;
